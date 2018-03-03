@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.ui.huge.header {
+	margin-top: 5em;
+}
+
+.ui.five.statistics {
+	margin-top: 10em;
+}
