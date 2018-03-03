@@ -12,10 +12,12 @@ class Branch extends Component {
 			sprintColor: '',
 			masterColor: '',
 			conciergeColor: '',
-			sprintBranch: '',
-			conciergeBranch: '',
-			libraryBranch: '',
-			symfony1Branch: ''
+			apiColor: '',
+			sprintBranch: 'Unchanged',
+			conciergeBranch: 'Unchanged',
+			libraryBranch: 'Unchanged',
+			symfony1Branch: 'Unchanged',
+			apiBranch: 'Unchanged'
 		};
 	}
 
@@ -25,7 +27,11 @@ class Branch extends Component {
 		// MASTER BRANCH COLOR
 		getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/master/api/json?tree=color")
 		.then(function(response) {
-		    parent.setState({masterColor: response.color});
+			if (response.color.includes('-anime')) {
+			    parent.setState({masterColor: response.color.substring(0, response.color.indexOf('-anime'))});
+			} else {
+			    parent.setState({masterColor: response.color});
+			}
 
 			return response.color;
 		})
@@ -42,10 +48,13 @@ class Branch extends Component {
 			}
 		})
 		.then(function(response){
-		    parent.setState({concierge: 'response'}); 
 			getJson("http://jenkins.kiwicollection.net/job/concierge-multibranch/job/" + response + "/api/json?tree=color")
 			.then(function(response) {
-			    parent.setState({conciergeColor: response.color});
+				if (response.color.includes('-anime')) {
+				    parent.setState({conciergeColor: response.color.substring(0, response.color.indexOf('-anime'))});
+				} else {
+				    parent.setState({conciergeColor: response.color});
+				}
 
 				return response.color;
 			})
@@ -63,10 +72,14 @@ class Branch extends Component {
 			}
 		})
 		.then(function(response){
-		    parent.setState({concierge: 'response'}); 
 			getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/" + response + "/api/json?tree=color")
 			.then(function(response) {
-			    parent.setState({sprintColor: response.color});
+				if (response.color.includes('-anime')) {
+					console.log(response.color.substring(0, response.color.indexOf('-anime')));
+				    parent.setState({sprintColor: response.color.substring(0, response.color.indexOf('-anime'))});
+				} else {
+				    parent.setState({sprintColor: response.color});
+				}
 
 				return response.color;
 			})
@@ -78,6 +91,18 @@ class Branch extends Component {
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
 				    parent.setState({symfony1Branch: response[branch].name});
+
+					return response[branch].name;
+				}
+			}
+		})
+
+		// DEVOPS BRANCH NAME
+		getJson("https://git.kiwicollection.net/api/v4/projects/37/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		.then(function(response){
+			for (var branch in response) {
+				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
+				    parent.setState({devopsBranch: response[branch].name});
 
 					return response[branch].name;
 				}
@@ -99,19 +124,24 @@ class Branch extends Component {
 
     render() {
         return (
-        	<div className="branchContainer">
+        	<div className="ui container">
 	            <div id="last-deployed"></div>
-	            <h1 className="ui huge centered header">Kiwi Dash</h1>
+	            <div className="ui centered header">
+					<div className={`ui ${this.state.masterColor} statistic`}>
+						<div className="label">{this.state.devopsBranch}</div>
+						<div className="value">master</div>
+					</div>
+	            </div>
 	        	<div className="ui five tiny statistics">
 					<div className={`${this.state.sprintColor} statistic`}>
 						<div className="label">{this.state.sprintBranch}</div>
 						<div className="value">main</div>
-						<div className="label">62%</div>
+						<div className="label">code-coverage</div>
 					</div>
 					<div className={`${this.state.conciergeColor} statistic`}>
 						<div className="label">{this.state.conciergeBranch}</div>
 						<div className="value">concierge</div>
-						<div className="label">92%</div>
+						<div className="label">code-coverage</div>
 					</div>
 					<div className={`${this.state.libraryColor} statistic`}>
 						<div className="label">{this.state.libraryBranch}</div>
@@ -121,9 +151,10 @@ class Branch extends Component {
 						<div className="label">{this.state.symfony1Branch}</div>
 						<div className="value">symfony1</div>
 					</div>
-					<div className={`${this.state.masterColor} statistic`}>
-						<div className="label">{this.state.masterBranch}</div>
-						<div className="value">master</div>
+					<div className={`${this.state.apiColor} statistic`}>
+						<div className="label">coming soon</div>
+						<div className="value">api</div>
+						<div className="label">code-coverage</div>
 					</div>
 				</div>
 			</div>

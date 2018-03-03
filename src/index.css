@@ -11,3 +11,7 @@ body {
 .ui.five.statistics {
 	margin-top: 10em;
 }
+
+.last-deployed {
+	padding-top: 1em;
+}
