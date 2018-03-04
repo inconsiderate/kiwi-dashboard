@@ -10,45 +10,54 @@ class Branch extends Component {
 
 		this.state = {
 			master: {
+				jenkinsSource: '',
+				gitSource: '',
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: '',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			concierge: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/application/concierge',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			mainapp: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/application/main',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			symfony1: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/kiwi-main',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			devops: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/devops',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			library: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/shared/library',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 			api: {
 				color: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/application/api',
+				codecoverageLink: '',
 				branch: 'Unchanged'
 			},
 		};
@@ -170,13 +179,22 @@ class Branch extends Component {
 	}
 
     render() {
+    	let masterMessageLabel = null;
+
+    	if (this.state.master.color === 'blue') {
+			masterMessageLabel = <div className="label">Clear Sailing Ahead</div>
+    	} else {
+			masterMessageLabel = <div className="ui red label">Master is Broken! Fix it!</div>
+    	}
+
         return (
         	<div className="ui container">
 	            <div id="last-deployed"></div>
 	            <div className="ui centered header">
 					<div className={`ui ${this.state.master.color} statistic`}>
 		            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} value`}>Master</a>
-						<div className="label">this better be blue</div>
+						{masterMessageLabel}
+
 					</div>
 	            </div>
 
@@ -191,7 +209,7 @@ class Branch extends Component {
 			            <div className="extra content">
 			            	<div className="ui two buttons">
 				            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} button`}>Build Status</a>
-				            	<div className={`ui basic black button`}>72% coverage</div>
+				            	<a href={this.state.mainapp.codecoverageLink} target="_blank" className={`ui basic black button`}>72% coverage</a>
 				            </div>
 			            </div>
 	            	</div>
@@ -205,7 +223,7 @@ class Branch extends Component {
 			            <div className="extra content">
 			            	<div className="ui two buttons">
 				            	<a href={this.state.concierge.url} target="_blank" className={`ui basic ${this.state.concierge.color} button`}>Build Status</a>
-				            	<div className={`ui basic black button`}>87% coverage</div>
+				            	<a href={this.state.concierge.codecoverageLink} target="_blank" className={`ui basic black button`}>72% coverage</a>
 				            </div>
 			            </div>
 	            	</div>
@@ -235,7 +253,7 @@ class Branch extends Component {
 			            <div className="extra content">
 			            	<div className="ui two buttons">
 				            	<div className={`ui basic ${this.state.api.color} black button`}>coming soon</div>
-				            	<div className={`ui basic black button`}>coming soon</div>
+				            	<a href={this.state.api.codecoverageLink} target="_blank" className={`ui basic black button`}>coming soon</a>
 				            </div>
 			            </div>
 	            	</div>

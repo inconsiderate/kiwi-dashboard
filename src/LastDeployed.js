@@ -32,9 +32,13 @@ class LastDeployed extends Component {
 	}
 
     render() {
-        return (
-            <div className={`ui center aligned ${this.state.color} segment`}>{this.state.sprint} deployed {this.state.timestamp}</div>
-        );
+    	if (this.state.sprint) {
+	        return (
+	            <div className={`ui center aligned ${this.state.color} segment`}>{this.state.sprint} deployed {this.state.timestamp}</div>
+	        );    		
+    	} else {
+    		return null;
+    	}
     }
 }
 
