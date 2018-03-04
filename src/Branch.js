@@ -9,113 +9,160 @@ class Branch extends Component {
 		super(props);
 
 		this.state = {
-			sprintColor: '',
-			masterColor: '',
-			conciergeColor: '',
-			apiColor: '',
-			sprintBranch: 'Unchanged',
-			conciergeBranch: 'Unchanged',
-			libraryBranch: 'Unchanged',
-			symfony1Branch: 'Unchanged',
-			apiBranch: 'Unchanged'
+			master: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: '',
+				branch: 'Unchanged'
+			},
+			concierge: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/application/concierge',
+				branch: 'Unchanged'
+			},
+			mainapp: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/application/main',
+				branch: 'Unchanged'
+			},
+			symfony1: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/kiwi-main',
+				branch: 'Unchanged'
+			},
+			devops: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/devops',
+				branch: 'Unchanged'
+			},
+			library: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/shared/library',
+				branch: 'Unchanged'
+			},
+			api: {
+				color: '',
+				jenkinsLink: '',
+				gitlabLink: 'https://git.kiwicollection.net/application/api',
+				branch: 'Unchanged'
+			},
 		};
 	}
 
 	componentWillMount() {
-		var parent = this;
+		let parent = this;
+		let master = {...parent.state.master};
+		let concierge = {...parent.state.concierge};
+		let mainapp = {...parent.state.mainapp};
+		let symfony1 = {...parent.state.symfony1};
+		let devops = {...parent.state.devops};
+		let library = {...parent.state.library};
+		let api = {...parent.state.api};
 
 		// MASTER BRANCH COLOR
-		getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/master/api/json?tree=color")
+		getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/master/api/json?tree=color,url")
 		.then(function(response) {
+			master.color = response.color;
+			master.jenkinsLink = response.url;
 			if (response.color.includes('-anime')) {
-			    parent.setState({masterColor: response.color.substring(0, response.color.indexOf('-anime'))});
-			} else {
-			    parent.setState({masterColor: response.color});
+			    master.color = response.color.substring(0, response.color.indexOf('-anime'));
 			}
 
+		    parent.setState({master});
 			return response.color;
 		})
 
 		// CONCIERGE BRANCH NAME AND COLOR
-		getJson("https://git.kiwicollection.net/api/v4/projects/71/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		getJson("https://git.kiwicollection.net/api/v4/projects/71/repository/branches?private_token="+GITLAB_KEY+"&per_page=100")
 		.then(function(response){
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
-				    parent.setState({conciergeBranch: response[branch].name});
+					concierge.branch = response[branch].name;
 
+				    parent.setState({concierge});
 					return response[branch].name;
 				}
 			}
 		})
 		.then(function(response){
-			getJson("http://jenkins.kiwicollection.net/job/concierge-multibranch/job/" + response + "/api/json?tree=color")
+			getJson("http://jenkins.kiwicollection.net/job/concierge-multibranch/job/" + response + "/api/json?tree=color,url")
 			.then(function(response) {
+				concierge.color = response.color;
+				concierge.jenkinsLink = response.url;
 				if (response.color.includes('-anime')) {
-				    parent.setState({conciergeColor: response.color.substring(0, response.color.indexOf('-anime'))});
-				} else {
-				    parent.setState({conciergeColor: response.color});
+					concierge.color = response.color.substring(0, response.color.indexOf('-anime'));
 				}
 
+			    parent.setState({concierge});
 				return response.color;
 			})
 		})
 
 		// MAIN SPRINT BRANCH NAME AND COLOR
-		getJson("https://git.kiwicollection.net/api/v4/projects/72/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		getJson("https://git.kiwicollection.net/api/v4/projects/72/repository/branches?private_token="+GITLAB_KEY+"&per_page=100")
 		.then(function(response){
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
-				    parent.setState({sprintBranch: response[branch].name});
+					mainapp.branch = response[branch].name;
 
+				    parent.setState({mainapp});
 					return response[branch].name;
 				}
 			}
 		})
 		.then(function(response){
-			getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/" + response + "/api/json?tree=color")
+			getJson("http://jenkins.kiwicollection.net/job/sprint-multibranch/job/" + response + "/api/json?tree=color,url")
 			.then(function(response) {
+				mainapp.color = response.color;
+				mainapp.jenkinsLink = response.url;
 				if (response.color.includes('-anime')) {
-					console.log(response.color.substring(0, response.color.indexOf('-anime')));
-				    parent.setState({sprintColor: response.color.substring(0, response.color.indexOf('-anime'))});
-				} else {
-				    parent.setState({sprintColor: response.color});
+					mainapp.color = response.color.substring(0, response.color.indexOf('-anime'));
 				}
 
+			    parent.setState({mainapp});
 				return response.color;
 			})
 		})
 
 		// SYMFONY1 BRANCH NAME
-		getJson("https://git.kiwicollection.net/api/v4/projects/55/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		getJson("https://git.kiwicollection.net/api/v4/projects/55/repository/branches?private_token="+GITLAB_KEY+"&per_page=100")
 		.then(function(response){
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
-				    parent.setState({symfony1Branch: response[branch].name});
+					symfony1.branch = response[branch].name;
 
+				    parent.setState({symfony1});
 					return response[branch].name;
 				}
 			}
 		})
 
 		// DEVOPS BRANCH NAME
-		getJson("https://git.kiwicollection.net/api/v4/projects/37/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		getJson("https://git.kiwicollection.net/api/v4/projects/37/repository/branches?private_token="+GITLAB_KEY+"&per_page=100")
 		.then(function(response){
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
-				    parent.setState({devopsBranch: response[branch].name});
+					devops.branch = response[branch].name;
 
+				    parent.setState({devops});
 					return response[branch].name;
 				}
 			}
 		})
 
 		// LIBRARY BRANCH NAME
-		getJson("https://git.kiwicollection.net/api/v4/projects/73/repository/branches?private_token="+ GITLAB_KEY +"&per_page=100")
+		getJson("https://git.kiwicollection.net/api/v4/projects/73/repository/branches?private_token="+GITLAB_KEY+"&per_page=100")
 		.then(function(response){
 			for (var branch in response) {
 				if (response[branch].merged === false && response[branch].name.includes('rc-')) {
-				    parent.setState({libraryBranch: response[branch].name});
+					library.branch = response[branch].name;
 
+				    parent.setState({library});
 					return response[branch].name;
 				}
 			}
@@ -127,36 +174,72 @@ class Branch extends Component {
         	<div className="ui container">
 	            <div id="last-deployed"></div>
 	            <div className="ui centered header">
-					<div className={`ui ${this.state.masterColor} statistic`}>
-						<div className="label">{this.state.devopsBranch}</div>
-						<div className="value">master</div>
+					<div className={`ui ${this.state.master.color} statistic`}>
+		            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} value`}>Master</a>
+						<div className="label">this better be blue</div>
 					</div>
 	            </div>
-	        	<div className="ui five tiny statistics">
-					<div className={`${this.state.sprintColor} statistic`}>
-						<div className="label">{this.state.sprintBranch}</div>
-						<div className="value">main</div>
-						<div className="label">code-coverage</div>
-					</div>
-					<div className={`${this.state.conciergeColor} statistic`}>
-						<div className="label">{this.state.conciergeBranch}</div>
-						<div className="value">concierge</div>
-						<div className="label">code-coverage</div>
-					</div>
-					<div className={`${this.state.libraryColor} statistic`}>
-						<div className="label">{this.state.libraryBranch}</div>
-						<div className="value">library</div>
-					</div>
-					<div className={`${this.state.symfony1Color} statistic`}>
-						<div className="label">{this.state.symfony1Branch}</div>
-						<div className="value">symfony1</div>
-					</div>
-					<div className={`${this.state.apiColor} statistic`}>
-						<div className="label">coming soon</div>
-						<div className="value">api</div>
-						<div className="label">code-coverage</div>
-					</div>
-				</div>
+
+	            <div className="ui five centered stackable cards">
+		            <div className="card">
+			            <a href={this.state.mainapp.gitlabLink} className="content">
+			            	<img className="right floated mini ui image" alt="test" src="/images/mainapp.png" />
+			            	<div className="header">MAIN-APP</div>
+			            	<div className="meta">{this.state.mainapp.branch}</div>
+			            	<div className="description">Some extra details on code coverage, etc. Maybe the last commit? I don't know.</div>
+			            </a>
+			            <div className="extra content">
+			            	<div className="ui two buttons">
+				            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} button`}>Build Status</a>
+				            	<div className={`ui basic black button`}>72% coverage</div>
+				            </div>
+			            </div>
+	            	</div>
+		            <div className="card">
+			            <a href={this.state.concierge.gitlabLink} className="content">
+			            	<img className="right floated mini ui image" alt="test" src="/images/concierge.png" />
+			            	<div className="header">CONCIERGE</div>
+			            	<div className="meta">{this.state.concierge.branch}</div>
+			            	<div className="description">Some extra details on code coverage, etc. Maybe the last commit? I don't know.</div>
+			            </a>
+			            <div className="extra content">
+			            	<div className="ui two buttons">
+				            	<a href={this.state.concierge.url} target="_blank" className={`ui basic ${this.state.concierge.color} button`}>Build Status</a>
+				            	<div className={`ui basic black button`}>87% coverage</div>
+				            </div>
+			            </div>
+	            	</div>
+		            <div className="card">
+			            <a href={this.state.library.gitlabLink} className="content">
+			            	<img className="right floated mini ui image" alt="test" src="/images/library.jpg" />
+			            	<div className="header">LIBRARY</div>
+			            	<div className="meta">{this.state.library.branch}</div>
+			            	<div className="description">Some extra details on code coverage, etc. Maybe the last commit? I don't know.</div>
+			            </a>
+	            	</div>
+		            <div className="card">
+			            <a href={this.state.symfony1.gitlabLink} className="content">
+			            	<img className="right floated mini ui image" alt="test" src="/images/symfony1.png" />
+			            	<div className="header">SYMFONY1</div>
+			            	<div className="meta">{this.state.symfony1.branch}</div>
+			            	<div className="description">Some extra details on code coverage, etc. Maybe the last commit? I don't know.</div>
+			            </a>
+	            	</div>
+		            <div className="card">
+			            <a href={this.state.api.gitlabLink} className="content">
+			            	<img className="right floated mini ui image" alt="test" src="/images/api.gif" />
+			            	<div className="header">API</div>
+			            	<div className="meta">{this.state.api.branch}</div>
+			            	<div className="description">Some extra details on code coverage, etc. Maybe the last commit? I don't know.</div>
+			            </a>
+			            <div className="extra content">
+			            	<div className="ui two buttons">
+				            	<div className={`ui basic ${this.state.api.color} black button`}>coming soon</div>
+				            	<div className={`ui basic black button`}>coming soon</div>
+				            </div>
+			            </div>
+	            	</div>
+	            </div>
 			</div>
         );
     }
