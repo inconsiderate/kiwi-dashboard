@@ -102,8 +102,8 @@ class Branch extends Component {
 						.then(function(response) {
 							currentState[counter].color = response.color;
 							currentState[counter].jenkinsLink = response.url;
-							if (response.color.includes('-anime')) {
-								currentState[counter].color = response.color.substring(0, response.color.indexOf('-anime'));
+							if (response.color.includes('_anime')) {
+								currentState[counter].color = response.color.substring(0, response.color.indexOf('_anime'));
 								currentState[counter].testsRunning = 'pulsate';
 							}
 
@@ -123,8 +123,8 @@ class Branch extends Component {
 				.then(function(response) {
 					currentState[counter].color = response.color;
 					currentState[counter].jenkinsLink = response.url;
-					if (response.color.includes('-anime')) {
-						currentState[counter].color = response.color.substring(0, response.color.indexOf('-anime'));
+					if (response.color.includes('_anime')) {
+						currentState[counter].color = response.color.substring(0, response.color.indexOf('_anime'));
 						currentState[counter].testsRunning = 'pulsate';
 					}
 
