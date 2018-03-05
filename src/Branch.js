@@ -3,7 +3,7 @@ import { getJson } from './Api.js';
 import 'whatwg-fetch';
 
 var GITLAB_KEY = process.env.GITLAB_KEY || null;
-var gitQueryParams = "?private_token=&per_page=100";
+var gitQueryParams = "?private_token=" + GITLAB_KEY + "&per_page=100";
 var jenkinsQueryParams = "/api/json?tree=color,url";
 
 class Branch extends Component {
@@ -15,6 +15,7 @@ class Branch extends Component {
 				jenkinsSource: 'http://jenkins.kiwicollection.net/job/sprint-multibranch/job/master',
 				gitSource: null,
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: '',
 				codecoverageLink: '',
@@ -24,6 +25,7 @@ class Branch extends Component {
 				jenkinsSource: 'http://jenkins.kiwicollection.net/job/concierge-multibranch/job/',
 				gitSource: 'https://git.kiwicollection.net/api/v4/projects/71/repository/branches',
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/application/concierge',
 				codecoverageLink: '',
@@ -33,6 +35,7 @@ class Branch extends Component {
 				jenkinsSource: 'http://jenkins.kiwicollection.net/job/sprint-multibranch/job/',
 				gitSource: 'https://git.kiwicollection.net/api/v4/projects/72/repository/branches',
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/application/main',
 				codecoverageLink: '',
@@ -42,6 +45,7 @@ class Branch extends Component {
 				jenkinsSource: null,
 				gitSource: 'https://git.kiwicollection.net/api/v4/projects/55/repository/branches',
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/kiwi-main',
 				codecoverageLink: '',
@@ -51,6 +55,7 @@ class Branch extends Component {
 				jenkinsSource: null,
 				gitSource: 'https://git.kiwicollection.net/api/v4/projects/37/repository/branches',
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/kiwicollection/devops',
 				codecoverageLink: '',
@@ -60,6 +65,7 @@ class Branch extends Component {
 				jenkinsSource: null,
 				gitSource: 'https://git.kiwicollection.net/api/v4/projects/73/repository/branches',
 				color: '',
+				testsRunning: '',
 				jenkinsLink: '',
 				gitlabLink: 'https://git.kiwicollection.net/shared/library',
 				codecoverageLink: '',
@@ -70,12 +76,13 @@ class Branch extends Component {
 
 	componentWillMount() {
 		let parent = this;
-		var counter = 0;
 		for (var property in parent.state) {
+			let counter = 0;
+			let currentState = [];
 			counter++;
-			let currentState = []; 
-			currentState[counter] = {...this.state[property]};
-			if (currentState[counter].gitSource) {			
+			currentState[counter] = parent.state[property];
+
+			if (currentState[counter].gitSource) {
 				let git = currentState[counter].gitSource + gitQueryParams;
 
 				getJson(git)
@@ -91,13 +98,13 @@ class Branch extends Component {
 				.then(function(response){
 					if (currentState[counter].jenkinsSource) {
 						let jenkinsUrl = currentState[counter].jenkinsSource + response + jenkinsQueryParams;
-
 						getJson(jenkinsUrl)
 						.then(function(response) {
 							currentState[counter].color = response.color;
 							currentState[counter].jenkinsLink = response.url;
 							if (response.color.includes('-anime')) {
 								currentState[counter].color = response.color.substring(0, response.color.indexOf('-anime'));
+								currentState[counter].testsRunning = 'pulsate';
 							}
 
 							var obj = {};
@@ -110,26 +117,19 @@ class Branch extends Component {
 			} 
 
 			if (!currentState[counter].gitSource && currentState[counter].jenkinsSource) {
-				console.log(property);
-				console.log(currentState[counter].gitSource);
-				console.log(currentState[counter].jenkinsSource);
-
 				let jenkinsUrl = currentState[counter].jenkinsSource + jenkinsQueryParams;
 
 				getJson(jenkinsUrl)
 				.then(function(response) {
-									console.log(property);
-				console.log(currentState[counter].gitSource);
-				console.log(currentState[counter].jenkinsSource);
 					currentState[counter].color = response.color;
 					currentState[counter].jenkinsLink = response.url;
 					if (response.color.includes('-anime')) {
 						currentState[counter].color = response.color.substring(0, response.color.indexOf('-anime'));
+						currentState[counter].testsRunning = 'pulsate';
 					}
 
 					var obj = {};
 					obj[property] = currentState[counter];
-					console.log(obj);
 				    parent.setState({obj});
 
 				    return response;
@@ -151,7 +151,7 @@ class Branch extends Component {
         	<div className="ui container">
 	            <div id="last-deployed"></div>
 	            <div className="ui centered header">
-					<div className={`ui ${this.state.master.color} statistic`}>
+					<div className={`ui ${this.state.master.color} statistic ${this.state.master.testsRunning}`}>
 		            	<a href={this.state.master.jenkinsLink} target="_blank" className={`ui basic ${this.state.master.color} value`}>Master</a>
 						{masterMessageLabel}
 
@@ -182,7 +182,7 @@ class Branch extends Component {
 			            </a>
 			            <div className="extra content">
 			            	<div className="ui two buttons">
-				            	<a href={this.state.concierge.url} target="_blank" className={`ui basic ${this.state.concierge.color} button`}>Build Status</a>
+				            	<a href={this.state.concierge.jenkinsLink} target="_blank" className={`ui basic ${this.state.concierge.color} button`}>Build Status</a>
 				            	<a href={this.state.concierge.codecoverageLink} target="_blank" className={`ui basic black button`}>72% coverage</a>
 				            </div>
 			            </div>
