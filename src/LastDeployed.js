@@ -20,7 +20,7 @@ class LastDeployed extends Component {
 		getJson("http://jenkins.kiwicollection.net/view/Production/job/Production%20-%20Step%203%20-%20Add%20New%20and%20Remove%20Old%20Main%20App%20in%20Load%20Balancer/lastBuild/api/json")
 		.then(function(response) {
 			var date = moment(response.timestamp);
-			if (moment().diff(date, 'hours') < 2 ) {
+			if (moment().diff(date, 'hours') < 8 ) {
 				parent.setState({color: 'secondary inverted green'});
 			}
 

@@ -142,9 +142,9 @@ class Branch extends Component {
     	let masterMessageLabel = null;
 
     	if (this.state.master.color === 'blue') {
-			masterMessageLabel = <div className="ui horizontal blue label divider">Clear Sailing Ahead</div>
+			masterMessageLabel = <div className="ui horizontal blue label divider">Clear Skies Ahead</div>
     	} else {
-			masterMessageLabel = <div className="ui horizontal red label divider">Master is Broken! Fix it!</div>
+			masterMessageLabel = <div className={`ui horizontal ${this.state.master.color} label divider`}>Master is Broken! Fix it!</div>
     	}
 
         return (
@@ -152,8 +152,8 @@ class Branch extends Component {
 	            <div id="last-deployed"></div>
 	            <div className="ui centered header">
 					<div className={`ui ${this.state.master.color} statistic ${this.state.master.testsRunning}`}>
-		            	<a href={this.state.master.jenkinsLink} target="_blank" className={`ui basic ${this.state.master.color} value`}>Master</a>
 						{masterMessageLabel}
+		            	<a href={this.state.master.jenkinsLink} target="_blank" className={`ui basic ${this.state.master.color} value`}>Master</a>
 					</div>
 	            </div>
 
@@ -167,7 +167,7 @@ class Branch extends Component {
 			            </a>
 			            <div className="extra content">
 			            	<div className="ui two buttons">
-				            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} button`}>Build Status</a>
+				            	<a href={this.state.mainapp.jenkinsLink} target="_blank" className={`ui basic ${this.state.mainapp.color} button ${this.state.master.testsRunning}`}>Build Status</a>
 				            	<a href={this.state.mainapp.codecoverageLink} target="_blank" className={`ui basic black button`}>72% coverage</a>
 				            </div>
 			            </div>
@@ -181,7 +181,7 @@ class Branch extends Component {
 			            </a>
 			            <div className="extra content">
 			            	<div className="ui two buttons">
-				            	<a href={this.state.concierge.jenkinsLink} target="_blank" className={`ui basic ${this.state.concierge.color} button`}>Build Status</a>
+				            	<a href={this.state.concierge.jenkinsLink} target="_blank" className={`ui basic ${this.state.concierge.color} button ${this.state.master.testsRunning}`}>Build Status</a>
 				            	<a href={this.state.concierge.codecoverageLink} target="_blank" className={`ui basic black button`}>72% coverage</a>
 				            </div>
 			            </div>
