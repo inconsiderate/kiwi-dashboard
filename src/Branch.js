@@ -142,9 +142,9 @@ class Branch extends Component {
     	let masterMessageLabel = null;
 
     	if (this.state.master.color === 'blue') {
-			masterMessageLabel = <div className="label">Clear Sailing Ahead</div>
+			masterMessageLabel = <div className="ui horizontal blue label divider">Clear Sailing Ahead</div>
     	} else {
-			masterMessageLabel = <div className="ui red label">Master is Broken! Fix it!</div>
+			masterMessageLabel = <div className="ui horizontal red label divider">Master is Broken! Fix it!</div>
     	}
 
         return (
@@ -154,7 +154,6 @@ class Branch extends Component {
 					<div className={`ui ${this.state.master.color} statistic ${this.state.master.testsRunning}`}>
 		            	<a href={this.state.master.jenkinsLink} target="_blank" className={`ui basic ${this.state.master.color} value`}>Master</a>
 						{masterMessageLabel}
-
 					</div>
 	            </div>
 
